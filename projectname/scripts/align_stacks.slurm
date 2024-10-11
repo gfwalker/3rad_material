@@ -3,11 +3,11 @@
 
 ##NECESSARY JOB SPECIFICATIONS
 #SBATCH --job-name=align_stacks
-#SBATCH --time=00:15:00
+#SBATCH --time=01:30:00
 #SBATCH --nodes=1
 #SBATCH --ntasks=32
 #SBATCH --mem=8G
-#SBATCH --output=/scratch/user/u.gw200825/ScHH_3RAD/integrated/align_stacks.%j
+#SBATCH --output=/scratch/user/u.gw200825/schh_3rad/stacks/integrated/align_stacks.%j
 
 
 #Executable Lines
@@ -18,14 +18,14 @@ module load GCCcore/11.3.0
 module load BWA/0.7.17
 
 #move to main ScHH directory
-cd /scratch/user/u.gw200825/ScHH_3RAD
+cd /scratch/user/u.gw200825/schh_3rad
 
 #Index the reference genome
 #bwa index ./reference/GCA_024679065.1_ASM2467906v1_genomic.fna  -p s.mokarran
 #Run bwamem
-bwa mem ./reference/s.mokarran  ./stacks/parameter_optimization/M3/catalog.fa.gz -t 32 > ./integrated/aligned.catalog.schh.sam
+#bwa mem ./reference/s.mokarran  ./stacks/parameter_optimization/M3/catalog.fa.gz -t 32 > ./stacks/integrated/aligned.catalog.schh.sam
 
 
 module load GCC/13.3.0
 module load SAMtools/1.20
-samtools view ./integrated/aligned.catalog.schh.sam -h -b > ./integrated/aligned.catalog.schh.bam
+samtools view ./integrated/aligned.catalog.schh.sam -h -b > ./stacks/integrated/aligned.catalog.schh.bam
