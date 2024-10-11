@@ -8,9 +8,9 @@
 #SBATCH --nodes=1
 #SBATCH --tasks=1
 #SBATCH --mem=2G
-#SBATCH --output=/scratch/user/u.gw200825/ScHH_3RAD/stacks/header_reformat.%j
+#SBATCH --output=/scratch/user/u.gw200825/schh_3rad/stacks/header_reformat.%j
 
-cd /scratch/user/u.gw200825/ScHH_3RAD/stacks
+cd /scratch/user/u.gw200825/schh_3rad/stacks
 
 for file in ./*tags.tsv.gz;
  do

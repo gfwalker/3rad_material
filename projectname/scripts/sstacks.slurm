@@ -8,7 +8,7 @@
 #SBATCH --nodes=1
 #SBATCH --tasks=1
 #SBATCH --mem=4G
-#SBATCH --output=/scratch/user/u.gw200825/ScHH_3RAD/stacks/parameter_optimization/M2/sstacks.%j
+#SBATCH --output=/scratch/user/u.gw200825/schh_3rad/stacks/parameter_optimization/M2/sstacks.%j
 #SBATCH --array=1-24
 
 #Executable Lines
@@ -17,7 +17,7 @@ module load OpenMPI/4.1.4
 module load Stacks/2.64
 
 #move to main ScHH directory
-cd /scratch/user/u.gw200825/ScHH_3RAD
+cd /scratch/user/u.gw200825/schh_3rad
 
 #Set the number of runs that each SLURM task in the array will do
 PER_TASK=8

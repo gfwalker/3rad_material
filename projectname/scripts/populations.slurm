@@ -8,7 +8,7 @@
 #SBATCH --nodes=1
 #SBATCH --ntasks=2
 #SBATCH --mem=4G
-#SBATCH --output=/scratch/user/u.gw200825/ScHH_3RAD/stacks/populations_optimization/r0.8_p3_het0.75/populations.out.%j
+#SBATCH --output=/scratch/user/u.gw200825/schh_3rad/stacks/populations_optimization/r0.8_p3_het0.75/populations.out.%j
 
 
 #Executable Lines
@@ -17,7 +17,7 @@ module load OpenMPI/4.1.4
 module load Stacks/2.64
 
 #move to main ScHH directory
-cd /scratch/user/u.gw200825/ScHH_3RAD
+cd /scratch/user/u.gw200825/schh_3rad
 
 #run populations
 populations -P ./stacks/parameter_optimization/M3 -M ./popmap/schh_popmap.txt -O ./stacks/populations_optimization/r0.8_p3_het0.75 -p 3 -r 0.8 --max-obs-het 0.75 --write-single-snp --vcf
