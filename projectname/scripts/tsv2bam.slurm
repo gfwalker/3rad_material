@@ -3,12 +3,12 @@
 ##This is a slurm job file that runs tsv2bam
 
 ##NECESSARY JOB SPECIFICATIONS
-#SBATCH --job-name=tsv2bam_M2
+#SBATCH --job-name=tsv2bam_n3
 #SBATCH --time=00:15:00
 #SBATCH --nodes=1
 #SBATCH --tasks=1
 #SBATCH --mem=1G
-#SBATCH --output=/scratch/user/u.gw200825/ScHH_3RAD/stacks/parameter_optimization/M2/tsv2bam.%j
+#SBATCH --output=/scratch/user/u.gw200825/schh_3rad/stacks/parameter_optimization/n3/tsv2bam.%j
 #SBATCH --array=1-24
 
 #Executable Lines
@@ -17,7 +17,7 @@ module load OpenMPI/4.1.4
 module load Stacks/2.64
 
 #move to main ScHH directory
-cd /scratch/user/u.gw200825/ScHH_3RAD
+cd /scratch/user/u.gw200825/schh_3rad
 
 #Set the number of runs that each SLURM task in the array will do
 PER_TASK=8
@@ -37,5 +37,5 @@ for (( run=$START_NUM; run<=END_NUM; run++ )); do
  echo This is task $SLURM_ARRAY_TASK_ID and run $run
  sample=${all_samples[$run-1]}
  echo This is sample $sample
- tsv2bam -P ./stacks/parameter_optimization/M2 -s $sample -R ./decloned_fastqs
+ tsv2bam -P ./stacks/parameter_optimization/n3 -s $sample -R ./decloned_fastqs
 done
