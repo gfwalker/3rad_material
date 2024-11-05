@@ -10,9 +10,9 @@
 #SBATCH --mem=2G
 #SBATCH --output=/scratch/user/u.gw200825/schh_3rad/stacks/header_reformat.%j
 
-cd /scratch/user/u.gw200825/schh_3rad/stacks
+cd /scratch/user/u.gw200825/schh_3rad
 
-for file in ./*tags.tsv.gz;
+for file in ./decloned_fastqs/*.fastq.gz;
  do
  gunzip $file
  unzipped=${file::-3}

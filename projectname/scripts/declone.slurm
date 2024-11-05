@@ -35,11 +35,9 @@ all_samples=( $(cut -f1 ./popmap/schh_popmap.txt) )
 #Run the loop of runs for this task
 for (( run=$START_NUM; run<=END_NUM; run++ )); do
  echo This is task $SLURM_ARRAY_TASK_ID and run $run
- sample=./stacks/${all_samples[$run]}
  r1=./demuxed_fastqs/${all_samples[$run-1]}.1.fastq.gz
  r2=./demuxed_fastqs/${all_samples[$run-1]}.2.fastq.gz
  echo Read 1 is $r1 and Read 2 is $r2
  clone_filter -1 $r1  -2 $r2 -o ./decloned_fastqs/ -D -i gzfastq --index_null --oligo_len_1 len 141 --oligo_len_2 len 141
 done
-#Rename files to remove redundant .1 and .2 added by clone_filter
-cd ./decloned_fastqs
+

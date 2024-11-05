@@ -36,33 +36,33 @@ Great! Now we can move on to the stacks pipeline. First, we will demultiplex our
 
 **3. Edit the demultiplexing slurm script.** In order to run intensive code on the cluster, we will need to submit a slurm job, which schedules our code to be run when the necessary computational resources are available. The slurm job for demultiplexing is titled demux.slurm and is stored in the scripts directory. Open it in your text editor of choice (e.g. nano). A copy has been provided below:
 
-demux.slurm
-
+> demux.slurm
+>
 > #!/bin/bash
-
+> 
 > ##This is a slurm job file that uses process_radtags to demultiplex (demux) individuals using a barcode file
-
-> ##NECESSARY JOB SPECIFICATIONS \
-> #SBATCH --job-name=Demux_pt1 \
-> #SBATCH --time=05:00:00 \
-> #SBATCH --nodes=1 \
-> #SBATCH --ntasks=4 \
-> #SBATCH --mem=2G \
-> #SBATCH --output=/scratch/user/u.gw200825/ScHH_3RAD/demuxed_fastqs/Demux_pt1.Out.%j
-
-
-> #Executable Lines \
-> module load GCC/12.2.0 \
-> module load OpenMPI/4.1.4 \
-> module load Stacks/2.64 \
-
-> #move to main ScHH directory \
+> 
+> ##NECESSARY JOB SPECIFICATIONS
+> #SBATCH --job-name=demux_pt1
+> #SBATCH --time=05:00:00
+> #SBATCH --nodes=1
+> #SBATCH --ntasks=4
+> #SBATCH --mem=2G
+> #SBATCH --output=/scratch/user/u.gw200825/ScHH_3RAD/demuxed_fastqs/demux_pt1.out.%j
+>
+>
+> #Executable Lines
+> module load GCC/12.2.0
+> module load OpenMPI/4.1.4
+> module load Stacks/2.64
+>
+> #move to main ScHH directory
 > cd /scratch/user/u.gw200825/ScHH_3RAD
-
-> #Process radtags \
-> #Remember to change input files each time you do a different plate
-
-> process_radtags -P -p ./raw_plates/plate1 -b ./barcodes/Pt1_barcodes.txt -o ./demuxed_fastqs \
+>
+> #Process radtags
+> # Remember to change input files each time you do a different plate
+>
+> process_radtags -P -p ./raw_plates/plate1 -b ./barcodes/pt1_barcodes.txt -o ./demuxed_fastqs \
 >       -i gzfastq \
 >       --inline_inline --renz-1 xbaI --renz-2 ecoRI \
 >       --adapter_mm 2 \
@@ -76,12 +76,11 @@ The first section of this script tells the slurm scheduler what resources you ne
 The next section loads the necessary modules. You may need to replace these with the latest versions if these instructions are out of date. 
 Finally, the process_radtags command is used. Check documentation to see what each option is and edit accordingly, outputting your demultiplexed fastq files in the projectname/demuxed_fastqs directory.
 
-
 **4. Submit the demultiplexing slurm job** Once this script has been edited appropriately, submit it with the sbatch command:
 
 > sbatch demux.slurm
 
-This submits it to the slurm scheduler to be run. You can check on it's progress with the squeue command (squeue -u USERNAME). Once finished, you should have demultiplexed files from all your plate 1 individuals in your demuxed_fastqs directory, named according to their OCID. If it failed, the job will finish very quickly. Use the "less" command to read your log files to view any errors for troubleshooting, make sure the samples demultiplexed correctly, and see how many reads were retained. Repeat for all plates.
+This submits it to the slurm scheduler to be run. You can check on it's progress with the squeue command (squeue -u $USERNAME). Once finished, you should have demultiplexed files from all your plate 1 individuals in your demuxed_fastqs directory, named according to their OCID. If it failed, the job will finish very quickly. Use the "less" command to read your log files to view any errors for troubleshooting, make sure the samples demultiplexed correctly, and see how many reads were retained. You can also move your discarded reads and remainder reads to the appropriate folders to keep your main folders cleaner. Repeat for all plates. 
 
 # Section 3: Removing PCR Duplicates
 **1. Make a popmap file.** For our next script, we will need to make a popmap file, which is essentially a list of your samples and which population they came from. To make this popmap file, copy your list of sample names for the plates you are analyzing (192 samples if you have 2 plates) into an excel column and then enter their location in the second column. For negative controls, I use "NEG" as the population. Save this file as a .tsv (tab separated values) file and move it to your projectname/popmap directory. Many of the stacks slurm scripts will reference this file in order to retrieve your sample names.
@@ -150,30 +149,40 @@ This should create a single fastqc file for each individual and then a combined 
 First, we will run the stacks pipeline using all default parameters just to get a feel for the software and take a preliminary look at the data. The stacks pipeline consists of ustacks, cstacks, sstacks, tsv2bam, gstacks, and populations. Slurm scripts for all of these commands are located in the scripts folder and will need to be edited to match your files and run conditions. Refer to stacks documentation for help with parameters and options. 
 
 **1. ustacks** \
-Input fastq files from your decloned_fastqs directory and output into your projectname/stacks directory. Default parameters are M=2, m=3, N=4. 
+Input fastq files from your decloned_fastqs directory and output into your projectname/stacks/default directory. Default parameters are M=2, m=3, N=4. 
 
 > sbatch ustacks.slurm
+
+After ustacks, you will need to once again rename the output files to remove the ".1" added to the end using the rename.sh script. It's annoying, but for now I don't have a good workaround. 
 
 **2. cstacks** \
 Using all of your inviduals to create a catalog is computationally intensive, so we need to make a new, smaller popmap that will be used for catalog construction. To do this, run the catalog_popmap.txt script from your popmap directory. It will pull 20 (can be changed) random samples from each of your populations to make the catalog popmap. make sure to replace FLA/GAL/SEY with your population names before running. 
 
-> ../../scripts/make_catalog_popmap.sh
+> projectname/scripts/make_catalog_popmap.sh
 
-Run cstacks using files from you stacks directory and your newly created catalog_popmap.txt file.
+Run cstacks using files from you stacks/default directory and your newly created catalog_popmap.txt file.
 
 > sbatch cstacks.slurm
 
 **3. sstacks** \
-Inputs are taken from your stacks directory by comparing your ustacks files to your newly created catalog file. Outputs ".matches" files into the same stacks directory. 
+Inputs are taken from your stacks/default directory by comparing your ustacks files to your newly created catalog file. Outputs ".matches" files into the same stacks/default directory. 
+
+> sbatch sstacks.slurm
 
 **4. tsv2bam** \
-Inputs stacks files from your stacks directory and combines with corresponding reverse reads from your decloned_fastqs directory. Outputs ".bam" files in your stacks directory
+Inputs stacks files from your stacks/default directory and combines with corresponding reverse reads from your decloned_fastqs directory. Outputs ".bam" files in your stacks/default directory
+
+> sbatch tsv2bam.slurm
 
 **5. gstacks** \
-Inputs stacks files from your stacks directory. Outputs "catalog.calls" and "catalog.fa.gz" which contain genotype information for all your samples.
+Inputs stacks files from your stacks/default directory. Outputs "catalog.calls" and "catalog.fa.gz" which contain genotype information for all your samples.
+
+> sbatch gstacks.slurm
 
 **6. populations** \
-Inputs the calaog files created by gstacks. Outputs populations files into your stacks directory. Leave the -r parameter at 0.8, --max-obs-het at 0.75, and change -p depending on the number of populations you have. 
+Inputs the calaog files created by gstacks. Outputs populations files into your stacks/default directory. Leave the -r parameter at 0.8, --max-obs-het at 0.75, and change -p depending on the number of populations you have. 
+
+> sbatch populations.slurm
 
 These populations output files are the final output of the stacks pipeline. Move them all onto your local computer to work with them in R. The "populations.snps.vcf" file in particular contains all your SNPs and genotype information for all your individuals, and will be used as the foundation for most analyses.
 
@@ -250,7 +259,7 @@ The first figure shows how average depth changes with different values of m. Rem
 
 The second and third figures shows how many SNPs and polymorphic loci are retained at each value of m. Generally, fewer stacks formed by a higher minimum depth threshold will mean fewer SNPs and polymorphic loci. We want to maximize the number fo polymorphic loci available to us, and the optimal value for m is designated by the red star in figure 3. 
 
-**3. Run the stacks pipeline varying ustacks parameter M = 0-8.** \
+**3. Run the stacks pipeline varying ustacks parameter M = 1-8.** \
 Repeat the process from step one, but this time the ustacks m parameter will be set to your optimized value and the M parameter will range from 0 to 8. Keep all outputs within the corresponding M0-M8 directories. 
 
 **4. Visualize parameter M optimization**\
@@ -279,11 +288,12 @@ This time, the ustacks parameters will remain constant, which means we can use t
 
 **6. Visualize parameter n optimization**
 ```{r,eval=FALSE}
-n.out = optimize_n(nequalsMminus1="~/sosf_ghri/schh_3rad/stacks/parameter_optimization/nminus/populations.snps.vcf",
-           nequalsM="~/sosf_ghri/schh_3rad/stacks/parameter_optimization/n/populations.snps.vcf",
-           nequalsMplus1="~/sosf_ghri/schh_3rad/stacks/parameter_optimization/nplus/populations.snps.vcf")
+n.out = optimize_n(nequalsMminus1 ="~/sosf_ghri/schh_3rad/stacks/parameter_optimization/n1/populations.snps.vcf",
+           nequalsM = "~/sosf_ghri/schh_3rad/stacks/parameter_optimization/n2/populations.snps.vcf",
+           nequalsMplus1 = "~/sosf_ghri/schh_3rad/stacks/parameter_optimization/n3/populations.snps.vcf")
 
 vis_snps(output = n.out, stacks_param = "n")
+vis_loci(output = n.out, stacks_param = "n")
 ```
 
 **7. Re-run populations with your final optimized data** Now that we have the optimal values for M, m, and n, re-run populations on your optimized data with the --write-single-snp option added, and output into your projectname/stacks/optimized directory. We only keep one SNP per locus in the final dataset because SNPs within a locus are likely highly correlated and may cause problems with linkage disequilibrium.
