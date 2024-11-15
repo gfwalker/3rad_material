@@ -9,7 +9,7 @@ Under projectname/scripts, you will find all the scripts you should need to run 
 
 3. 3rad_bioinformatics.Rmd - This is the Rmarkdown file used to generate the instructions. You don't need to care about this. 
 
-4. practicedata - The practice data directory contains the barcode and popmap files for scalloped hammerhead plates 1 and 2. The raw sequence data can be found on Teams. 
+4. practicedata - The practice data directory contains the barcode and popmap files for scalloped hammerhead plates 1,2,3, and 4 as well as popmaps for plates 1 and 2 (schh_popmap.txt) and plates 3 and 4 (lib2_popmap.txt). The raw sequence data can be found on Teams.  
 
 
  
