@@ -8,7 +8,7 @@
 #SBATCH --nodes=1		     #Request 1 node
 #SBATCH --ntasks=2                   #Request 2 cores for each run
 #SBATCH --mem=8G                     #Request 8GB per node
-#SBATCH --output=/scratch/user/u.gw200825/ScHH_3RAD/decloned_fastqs/CloneFilterOut.%j   #Send stdout/err to "CloneFilterOut.[jobID]"
+#SBATCH --output=/scratch/user/u.gw200825/schh_3rad/decloned_fastqs/lib2poor/clone_filter.%j   #Send stdout/err to "CloneFilterOut.[jobID]"
 #SBATCH --array=1-24		     #Array will split into 24 tasks with (8 samples each, specificed below)
 
 
@@ -18,7 +18,7 @@ module load OpenMPI/4.1.4
 module load Stacks/2.64
 
 #move to main ScHH directory
-cd /scratch/user/u.gw200825/ScHH_3RAD
+cd /scratch/user/u.gw200825/schh_3rad
 
 #Set the number of runs that each SLURM task in the array will do
 PER_TASK=8
@@ -30,14 +30,14 @@ END_NUM=$(( $SLURM_ARRAY_TASK_ID * $PER_TASK ))
 #Print the task and run range:
 echo This is task $SLURM_ARRAY_TASK_ID, which will do runs $START_NUM to $END_NUM
 
-all_samples=( $(cut -f1 ./popmap/schh_popmap.txt) )
+all_samples=( $(cut -f1 ./popmap/lib2_popmap.txt) )
 
 #Run the loop of runs for this task
 for (( run=$START_NUM; run<=END_NUM; run++ )); do
  echo This is task $SLURM_ARRAY_TASK_ID and run $run
- r1=./demuxed_fastqs/${all_samples[$run-1]}.1.fastq.gz
- r2=./demuxed_fastqs/${all_samples[$run-1]}.2.fastq.gz
+ r1=./demuxed_fastqs/lib2poor/${all_samples[$run-1]}.1.fq.gz
+ r2=./demuxed_fastqs/lib2poor/${all_samples[$run-1]}.2.fq.gz
  echo Read 1 is $r1 and Read 2 is $r2
- clone_filter -1 $r1  -2 $r2 -o ./decloned_fastqs/ -D -i gzfastq --index_null --oligo_len_1 len 141 --oligo_len_2 len 141
+ clone_filter -1 $r1  -2 $r2 -o ./decloned_fastqs/lib2poor/ -D -i gzfastq --index_null --oligo_len_1 len 141 --oligo_len_2 len 141
 done
 

@@ -132,13 +132,19 @@ Next, we need to reformat our fastq headers. Similar to what we just fixed, our 
 Check to make sure it worked by viewing the headers in the new fastq files with the less command. 
 
 # Section 3: FastQC and MultiQC
-**1. Edit and submit fastqc.slurm.** Now that we have demultiplexed and decloned sequence data for each individual, we are going to take a look at the quality with FastQC and multiQC. Edit file paths and submit the slurm job:
+**1. Edit and submit fastqc.slurm.** Now that we have demultiplexed and decloned sequence data for each individual, we are going to take a look at the quality with FastQC and MultiQC. Edit file paths and submit the slurm job:
 
-> sbatch fastqc.slurm
+> sbatch FastQC.slurm
 
-This should create a single fastqc file for each individual and then a combined multiqc file that includes all individuals. 
+This will create a single FastQC report for each individual
 
-**2. View your multiqc file locally.** Move all your fastqc and multiqc files off the cluster and into your computer. Then, open the multiQC html file and take a look at your data! Some things to look at: \
+**2. Edit and submit multiqc.slurm.**
+
+>sbatch MultiQC.slurm
+
+This will combine your FastQC reports into a single MultiQC report
+
+**2. View your MultiQC file locally.** Move all your FastQC and MultiQC files off the cluster and into your computer. Then, open the MultiQC html file and take a look at your data! Some things to look at: \
  1. Negligible runs from negative controls \
  2. Evenness of read counts among individuals \
  3. Number of reads per individual \

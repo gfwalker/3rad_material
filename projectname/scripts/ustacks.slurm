@@ -3,12 +3,12 @@
 ##This is a slurm job file that runs ustacks
 
 ##NECESSARY JOB SPECIFICATIONS
-#SBATCH --job-name=ustacks_M2
+#SBATCH --job-name=ustacks_lib2
 #SBATCH --time=00:30:00
 #SBATCH --nodes=1
 #SBATCH --tasks=1
 #SBATCH --mem=2G
-#SBATCH --output=/scratch/user/u.gw200825/schh_3rad/stacks/parameter_optimization/M2/ustacks.%j
+#SBATCH --output=/scratch/user/u.gw200825/schh_3rad/stacks/default/lib2poor/ustacks.%j
 #SBATCH --array=1-24
 
 #Executable Lines
@@ -29,12 +29,12 @@ END_NUM=$(( $SLURM_ARRAY_TASK_ID * $PER_TASK ))
 #Print the task and run range:
 echo This is task $SLURM_ARRAY_TASK_ID, which will do runs $START_NUM to $END_NUM
 
-all_samples=( $(cut -f1 ./popmap/schh_popmap.txt) )
+all_samples=( $(cut -f1 ./popmap/lib2_popmap.txt) )
 
 #Run the loop of runs for this task
 for (( run=$START_NUM; run<=END_NUM; run++ )); do
  echo This is task $SLURM_ARRAY_TASK_ID and run $run
- file=./decloned_fastqs/${all_samples[$run-1]}.1.fq
+ file=./decloned_fastqs/lib2poor/${all_samples[$run-1]}.1.fq
  echo This is sample $file
- ustacks -f $file -o ./stacks/parameter_optimization/M2 -M 2 -m 3 -i $run -t fastq -R
+ ustacks -f $file -o ./stacks/default/lib2poor -i $run -t fastq -R
 done
